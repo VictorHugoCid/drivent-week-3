@@ -5,7 +5,14 @@ import { TicketStatus } from "@prisma/client";
 import httpStatus from "http-status";
 import * as jwt from "jsonwebtoken";
 import supertest from "supertest";
-import { createHotel, createRoom, createUser } from "../factories";
+import {
+  createEnrollmentWithAddress,
+  createHotel,
+  createRoom,
+  createTicket,
+  createTicketType,
+  createUser,
+} from "../factories";
 import { cleanDb, generateValidToken } from "../helpers";
 
 beforeAll(async () => {
@@ -44,38 +51,75 @@ describe("GET /hotels", () => {
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
 
-  // WHEN TOKEN IS VALID
+  //  WHEN TOKEN IS VALID
+
   describe("when token is valid", () => {
-    it("should respond with empty array when there are no hotels created", async () => {
+    // no enrollment
+    it("should respond with status 404 when there is no enrollment for given user", async () => {
       const token = await generateValidToken();
 
       const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
 
-      expect(response.body).toEqual([]);
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+    // no ticket
+    describe("when has enrollment", () => {
+      it("should respond with status 404 when there is no ticket for given user", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const enrollment = await createEnrollmentWithAddress(user);
+
+        const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.NOT_FOUND);
+      });
     });
 
-    it("should respond with status 200 and with existing Hotels data", async () => {
-      const token = await generateValidToken();
+    // ticketType not paid
+    //
 
-      const hotel = await createHotel();
+    // HOTELS TIRAR O COMENTADO!!!!!!!!!!!!!!!!!!!!!!
+    // it("should respond with empty array when there are no hotels created", async () => {
+    //   const user = await createUser();
+    //   const token = await generateValidToken(user);
+    //   const enrollment = await createEnrollmentWithAddress(user);
+    //   const ticketType = await createTicketType();
+    //   const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
 
-      const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+    //   const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
 
-      expect(response.status).toBe(httpStatus.OK);
-      expect(response.body).toEqual([
-        {
-          id: hotel.id,
-          name: hotel.name,
-          image: hotel.image,
-          createdAt: hotel.createdAt.toISOString(),
-          updatedAt: hotel.updatedAt.toISOString(),
-        },
-      ]);
-    });
+    //   expect(response.body).toEqual([]);
+    // });
+
+    // it("should respond with status 200 and with existing Hotels data", async () => {
+    //   const user = await createUser();
+    //   const token = await generateValidToken(user);
+    //   const enrollment = await createEnrollmentWithAddress(user);
+    //   const ticketType = await createTicketType();
+    //   const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+
+    //   const hotel = await createHotel();
+
+    //   const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
+
+    //   expect(response.status).toBe(httpStatus.OK);
+    //   expect(response.body).toEqual([
+    //     {
+    //       id: hotel.id,
+    //       name: hotel.name,
+    //       image: hotel.image,
+    //       createdAt: hotel.createdAt.toISOString(),
+    //       updatedAt: hotel.updatedAt.toISOString(),
+    //     },
+    //   ]);
+    // });
   });
+
+  //      TICKET
+  //        TICKET_TYPE IS_REMOTE + INCLUDES_HOTEL
 });
 
-// GET /hotel/hotelId
+// GET rooms -> /hotel/hotelId
 describe("GET /hotels/:hotelId", () => {
   it("should respond with status 401 if no token is given", async () => {
     const hotelId = 100;

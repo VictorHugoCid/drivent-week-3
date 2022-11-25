@@ -9,6 +9,9 @@ async function getRooms(hotelId: number) {
     where: {
       hotelId,
     },
+    include: {
+      Hotel: true,
+    },
   });
 }
 

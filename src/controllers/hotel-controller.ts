@@ -7,11 +7,17 @@ export async function listHotels(req: AuthenticatedRequest, res: Response) {
   const { userId } = req as AuthenticatedRequest;
   try {
     const hotels = await hotelService.getHotels(userId);
-    
+
     return res.status(200).send(hotels);
-  } catch (error) {    
+  } catch (error) {
     if (error.name === "notFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    if (error.name === "paymentRequiredError") {
+      return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    }
+    if (error.name === "unauthorizedError") {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
     }
     return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
   }
@@ -22,12 +28,18 @@ export async function listRooms(req: AuthenticatedRequest, res: Response) {
   const { hotelId } = req.params;
 
   try {
-    const rooms = await hotelService.getRooms(Number(hotelId));
+    const rooms = await hotelService.getRooms(Number(hotelId), userId);
 
     return res.status(200).send(rooms);
   } catch (error) {
-    if (error.name === "NotFoundError") {
+    if (error.name === "notFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    if (error.name === "paymentRequiredError") {
+      return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    }
+    if (error.name === "unauthorizedError") {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
     }
     return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
   }

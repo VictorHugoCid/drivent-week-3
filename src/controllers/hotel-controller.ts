@@ -41,6 +41,9 @@ export async function listRooms(req: AuthenticatedRequest, res: Response) {
     if (error.name === "unauthorizedError") {
       return res.sendStatus(httpStatus.UNAUTHORIZED);
     }
+    if (error.name === "preconditionFailedError") {
+      return res.sendStatus(httpStatus.PRECONDITION_FAILED);
+    }
     return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
   }
 }

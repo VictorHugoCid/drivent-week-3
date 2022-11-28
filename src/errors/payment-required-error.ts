@@ -1,8 +1,8 @@
 import { ApplicationError } from "@/protocols";
 
-export function paymentRequiredError(): ApplicationError {
+export function preconditionFailedError(): ApplicationError {
   return {
-    name: "paymentRequired",
-    message: "Payment Required",
+    name: "preconditionFailed",
+    message: "Precondition Failed",
   };
 }

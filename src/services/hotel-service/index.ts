@@ -1,4 +1,4 @@
-import { conflictError, notFoundError, paymentRequiredError, unauthorizedError } from "@/errors";
+import { conflictError, notFoundError, paymentRequiredError, preconditionFailedError, unauthorizedError } from "@/errors";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import hotelRepository from "@/repositories/hotel-repository";
 import ticketRepository from "@/repositories/ticket-repository";
@@ -44,7 +44,7 @@ async function getRooms(hotelId: number, userId: number) {
     throw paymentRequiredError;
   }
   if (ticket.TicketType.includesHotel === false || ticket.TicketType.isRemote === true) {
-    throw unauthorizedError;
+    throw preconditionFailedError;
   }
 
   const rooms = await hotelRepository.getRooms(hotelId);

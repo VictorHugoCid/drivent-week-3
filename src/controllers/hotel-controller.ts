@@ -29,7 +29,6 @@ export async function listRooms(req: AuthenticatedRequest, res: Response) {
 
   try {
     const rooms = await hotelService.getRooms(Number(hotelId), userId);
-    console.log("🚀🚀🚀 ~ file: hotel-controller.ts ~ line 32 ~ listRooms ~ rooms", rooms);
 
     return res.status(200).send(rooms);
   } catch (error) {

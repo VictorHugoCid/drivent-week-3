@@ -1,7 +1,7 @@
 import app, { init } from "@/app";
 import faker from "@faker-js/faker";
 import { TicketStatus } from "@prisma/client";
-import httpStatus from "http-status";
+import httpStatus, { EXPECTATION_FAILED } from "http-status";
 import * as jwt from "jsonwebtoken";
 import supertest from "supertest";
 import {
@@ -130,11 +130,11 @@ describe("GET /hotels", () => {
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual([
         {
-          id: hotel.id,
-          name: hotel.name,
-          image: hotel.image,
-          createdAt: hotel.createdAt.toISOString(),
-          updatedAt: hotel.updatedAt.toISOString(),
+          id: expect.any(Number),
+          name: expect.any(String),
+          image: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
         },
       ]);
     });
@@ -236,7 +236,7 @@ describe("GET /hotels/:hotelId", () => {
 
   //   when everything is ok
   describe("when ticket is PAID, isRemote is false and includesHotel is true", () => {
-    it("should respond with empty array when there are no rooms created", async () => {
+    it("should respond with Hotel Data includes empty Rooms array when there are no rooms created", async () => {
       //default
       const user = await createUser();
       const token = await generateValidToken(user);
@@ -249,13 +249,14 @@ describe("GET /hotels/:hotelId", () => {
 
       const response = await server.get(`/hotels/${hotelId}`).set("Authorization", `Bearer ${token}`);
 
+      expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual([
         {
-          id: hotel.id,
-          name: hotel.name,
-          image: hotel.image,
-          createdAt: hotel.createdAt.toISOString(),
-          updatedAt: hotel.updatedAt.toISOString(),
+          id: expect.any(Number),
+          name: expect.any(String),
+          image: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
           Rooms: [],
         },
       ]);
@@ -278,19 +279,19 @@ describe("GET /hotels/:hotelId", () => {
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual([
         {
-          id: hotel.id,
-          name: hotel.name,
-          image: hotel.image,
-          createdAt: hotel.createdAt.toISOString(),
-          updatedAt: hotel.updatedAt.toISOString(),
+          id: expect.any(Number),
+          name: expect.any(String),
+          image: expect.any(String),
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
           Rooms: [
             {
-              id: room.id,
-              name: room.name,
-              capacity: room.capacity,
-              hotelId: room.hotelId,
-              createdAt: room.createdAt.toISOString(),
-              updatedAt: room.updatedAt.toISOString(),
+              id: expect.any(Number),
+              name: expect.any(String),
+              capacity: expect.any(Number),
+              hotelId: expect.any(Number),
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
             },
           ],
         },

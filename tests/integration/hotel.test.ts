@@ -217,7 +217,7 @@ describe("GET /hotels/:hotelId", () => {
       expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
     });
     // ticket.isRemote true or ticket.includesHotel false
-    it("should respond with status 401 when the ticketType.isRemote is true or ticket.Type.includesHotel is false", async () => {
+    it("should respond with status 412 when the ticketType.isRemote is true or ticket.Type.includesHotel is false", async () => {
       //default
       const user = await createUser();
       const token = await generateValidToken(user);
@@ -230,13 +230,13 @@ describe("GET /hotels/:hotelId", () => {
 
       const response = await server.get(`/hotels/${hotelId}`).set("Authorization", `Bearer ${token}`);
 
-      expect(response.status).toEqual(httpStatus.UNAUTHORIZED);
+      expect(response.status).toEqual(httpStatus.PRECONDITION_FAILED);
     });
   });
 
   //   when everything is ok
   describe("when ticket is PAID, isRemote is false and includesHotel is true", () => {
-    it("should respond with Hotel Data includes empty Rooms array when there are no rooms created", async () => {
+    it("should respond with status 200 and Hotel Data including empty Rooms array when there are no rooms created", async () => {
       //default
       const user = await createUser();
       const token = await generateValidToken(user);
